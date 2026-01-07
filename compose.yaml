@@ -1,8 +1,6 @@
 services:
   web-calc:
     image: nginx:latest
-    ports:
-      - 80:80
     networks:
       - net
     volumes:
