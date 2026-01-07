@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple JavaScript Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 30vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .calculator {
+            width: 100%;
+            max-width: 400px;
+            background-color: #222831;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 1px solid #393e46;
+        }
+        
+        .header {
+            background-color: #00adb5;
+            color: white;
+            padding: 5px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1rem;
+            margin-bottom: 1px;
+        }
+        
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .display {
+            padding: 25px 20px;
+            background-color: #1b1f24;
+        }
+        
+        .calculation {
+            font-size: 1.2rem;
+            color: #888;
+            min-height: 28px;
+            text-align: right;
+            word-wrap: break-word;
+            margin-bottom: 5px;
+        }
+        
+        .result {
+            font-size: 2.8rem;
+            color: white;
+            text-align: right;
+            word-wrap: break-word;
+            min-height: 65px;
+            font-weight: 300;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background-color: #393e46;
+        }
+        
+        .btn {
+            border: none;
+            padding: 10px 10px;
+            font-size: 1.4rem;
+            background-color: #393e46;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            background-color: #4a4f57;
+        }
+        
+        .btn:active {
+            transform: scale(0.97);
+        }
+        
+        .operator {
+            background-color: #00adb5;
+            color: white;
+        }
+        
+        .operator:hover {
+            background-color: #00c4cc;
+        }
+        
+        .equals {
+            background-color: #ff5722;
+            grid-column: span 2;
+            color: white;           
+        }
+        
+        .equals:hover {
+            background-color: #ff6b3d;
+        }
+        
+        .backspace, .clear {
+            background-color: #555;          
+        }
+       
+        .clear:hover, .backspace:hover {
+            background-color: #666;
+        }
+                  
+        .memory-display {
+            background-color: #1b1f24;
+            padding: 10px 20px;
+            color: #666;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #393e46;
+        }
+        
+        .memory-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .memory-btn {
+            background: none;
+            border: 1px solid #555;
+            color: #888;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .memory-btn:hover {
+            background-color: #333;
+            color: white;
+        }
+                        
+        .key-note {
+            color: #ff5722;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 500px) {
+            .calculator {
+                max-width: 350px;
+            }
+            
+            .btn {
+                padding: 20px 5px;
+                font-size: 1.3rem;
+            }
+            
+            .result {
+                font-size: 2.4rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .calculator {
+                max-width: 320px;
+            }
+            
+            .btn {
+                padding: 18px 5px;
+                font-size: 1.2rem;
+            }
+            
+            .result {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="header">
+            <h1><i class="fas fa-calculator"></i> JavaScript Calculator</h1>            
+        </div>
+        
+        <div class="display">
+            <div class="calculation" id="calculation">0</div>
+            <div class="result" id="result">0</div>
+        </div>
+        
+        <div class="memory-display">
+            <div>Memory: <span id="memory-indicator">Empty</span></div>
+            <div class="memory-controls">
+                <button class="memory-btn" id="memory-clear">MC</button>
+                <button class="memory-btn" id="memory-recall">MR</button>
+                <button class="memory-btn" id="memory-add">M+</button>
+                <button class="memory-btn" id="memory-subtract">M-</button>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn clear" data-action="clear">C</button>
+            <button class="btn backspace" data-action="backspace">⌫</button> 
+            <button class="btn" data-action="decimal">.</button>    
+            <button class="btn operator" data-action="divide">÷</button>
+            
+            <button class="btn" data-number="1">1</button>
+            <button class="btn" data-number="2">2</button>
+            <button class="btn" data-number="3">3</button>
+            <button class="btn operator" data-action="add">+</button>
+
+            <button class="btn" data-number="4">4</button>
+            <button class="btn" data-number="5">5</button>
+            <button class="btn" data-number="6">6</button>
+            <button class="btn operator" data-action="subtract">−</button>
+
+            <button class="btn" data-number="7">7</button>
+            <button class="btn" data-number="8">8</button>
+            <button class="btn" data-number="9">9</button>
+            <button class="btn operator" data-action="multiply">×</button>
+                                         
+            <button class="btn zero" data-number="0">0</button>           
+            <button class="btn equals" data-action="equals">=</button>
+            <button class="btn operator" data-action="percent">%</button>
+        </div>       
+    </div>
+
+    <script>
+        // Calculator State
+        let currentValue = '0';
+        let previousValue = '';
+        let operation = null;
+        let calculationString = '';
+        let memory = 0;
+        let shouldResetScreen = false;
+
+        // DOM Elements
+        const resultElement = document.getElementById('result');
+        const calculationElement = document.getElementById('calculation');
+        const memoryIndicator = document.getElementById('memory-indicator');
+        
+        // Memory buttons
+        const memoryClearBtn = document.getElementById('memory-clear');
+        const memoryRecallBtn = document.getElementById('memory-recall');
+        const memoryAddBtn = document.getElementById('memory-add');
+        const memorySubtractBtn = document.getElementById('memory-subtract');
+
+        // Initialize calculator
+        function initCalculator() {
+            updateDisplay();
+            setupEventListeners();
+            updateMemoryIndicator();
+        }
+
+        // Update the display
+        function updateDisplay() {
+            resultElement.textContent = currentValue;
+            calculationElement.textContent = calculationString || '0';
+        }
+
+        // Update memory indicator
+        function updateMemoryIndicator() {
+            if (memory === 0) {
+                memoryIndicator.textContent = 'Empty';
+                memoryIndicator.style.color = '#666';
+            } else {
+                memoryIndicator.textContent = memory;
+                memoryIndicator.style.color = '#00adb5';
+            }
+        }
+
+        // Append number to current value
+        function appendNumber(number) {
+            if (shouldResetScreen) {
+                currentValue = '';
+                shouldResetScreen = false;
+            }
+            
+            // Prevent multiple zeros at the beginning
+            if (currentValue === '0' && number !== '.') {
+                currentValue = number;
+            } else {
+                // Prevent multiple decimal points
+                if (number === '.' && currentValue.includes('.')) {
+                    return;
+                }
+                currentValue += number;
+            }
+            
+            updateDisplay();
+        }
+
+        // Handle operator selection
+        function chooseOperation(op) {
+            if (currentValue === '') return;
+            
+            // If we already have a previous value, calculate it first
+            if (previousValue !== '' && operation !== null) {
+                calculate();
+            }
+            
+            // Set the operation
+            operation = op;
+            previousValue = currentValue;
+            
+            // Update calculation string
+            const operatorSymbol = getOperatorSymbol(op);
+            calculationString = `${previousValue} ${operatorSymbol}`;
+            
+            shouldResetScreen = true;
+            updateDisplay();
+        }
+
+        // Perform calculation
+        function calculate() {
+            if (previousValue === '' || operation === null) return;
+            
+            const prev = parseFloat(previousValue);
+            const current = parseFloat(currentValue);
+            
+            if (isNaN(prev) || isNaN(current)) return;
+            
+            let computation;
+            
+            switch (operation) {
+                case 'add':
+                    computation = prev + current;
+                    break;
+                case 'subtract':
+                    computation = prev - current;
+                    break;
+                case 'multiply':
+                    computation = prev * current;
+                    break;
+                case 'divide':
+                    if (current === 0) {
+                        alert("Cannot divide by zero!");
+                        clearCalculator();
+                        return;
+                    }
+                    computation = prev / current;
+                    break;
+                case 'percent':
+                    computation = prev * (current / 100);
+                    break;
+                default:
+                    return;
+            }
+            
+            // Update calculation string
+            const operatorSymbol = getOperatorSymbol(operation);
+            calculationString = `${previousValue} ${operatorSymbol} ${currentValue} =`;
+            
+            // Round to avoid floating point precision issues
+            currentValue = roundNumber(computation).toString();
+            operation = null;
+            previousValue = '';
+            shouldResetScreen = true;
+            
+            updateDisplay();
+        }
+
+        // Clear calculator
+        function clearCalculator() {
+            currentValue = '0';
+            previousValue = '';
+            operation = null;
+            calculationString = '';
+            shouldResetScreen = false;
+            updateDisplay();
+        }
+
+        // Delete last character
+        function backspace() {
+            if (currentValue.length === 1) {
+                currentValue = '0';
+            } else {
+                currentValue = currentValue.slice(0, -1);
+            }
+            updateDisplay();
+        }
+
+        // Calculate percentage
+        function calculatePercent() {
+            const current = parseFloat(currentValue);
+            if (isNaN(current)) return;
+            
+            currentValue = (current / 100).toString();
+            updateDisplay();
+        }
+
+        // Toggle sign (positive/negative)
+        function toggleSign() {
+            const current = parseFloat(currentValue);
+            if (isNaN(current)) return;
+            
+            currentValue = (current * -1).toString();
+            updateDisplay();
+        }
+
+        // Memory functions
+        function memoryClear() {
+            memory = 0;
+            updateMemoryIndicator();
+        }
+
+        function memoryRecall() {
+            currentValue = memory.toString();
+            shouldResetScreen = true;
+            updateDisplay();
+        }
+
+        function memoryAdd() {
+            const current = parseFloat(currentValue);
+            if (isNaN(current)) return;
+            
+            memory += current;
+            updateMemoryIndicator();
+        }
+
+        function memorySubtract() {
+            const current = parseFloat(currentValue);
+            if (isNaN(current)) return;
+            
+            memory -= current;
+            updateMemoryIndicator();
+        }
+
+        // Helper function to get operator symbol
+        function getOperatorSymbol(op) {
+            switch (op) {
+                case 'add': return '+';
+                case 'subtract': return '−';
+                case 'multiply': return '×';
+                case 'divide': return '÷';
+                case 'percent': return '%';
+                default: return '';
+            }
+        }
+
+        // Helper function to round numbers
+        function roundNumber(num) {
+            // Round to 10 decimal places to avoid floating point issues
+            return Math.round((num + Number.EPSILON) * 10000000000) / 10000000000;
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Number buttons
+            document.querySelectorAll('[data-number]').forEach(button => {
+                button.addEventListener('click', () => {
+                    appendNumber(button.getAttribute('data-number'));
+                });
+            });
+            
+            // Operation buttons
+            document.querySelectorAll('[data-action]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const action = button.getAttribute('data-action');
+                    
+                    switch (action) {
+                        case 'add':
+                        case 'subtract':
+                        case 'multiply':
+                        case 'divide':
+                        case 'percent':
+                            chooseOperation(action);
+                            break;
+                        case 'equals':
+                            calculate();
+                            break;
+                        case 'clear':
+                            clearCalculator();
+                            break;
+                        case 'backspace':
+                            backspace();
+                            break;
+                        case 'decimal':
+                            appendNumber('.');
+                            break;
+                    }
+                });
+            });
+            
+            // Memory buttons
+            memoryClearBtn.addEventListener('click', memoryClear);
+            memoryRecallBtn.addEventListener('click', memoryRecall);
+            memoryAddBtn.addEventListener('click', memoryAdd);
+            memorySubtractBtn.addEventListener('click', memorySubtract);
+            
+            // Keyboard support
+            document.addEventListener('keydown', handleKeyboardInput);
+        }
+
+        // Handle keyboard input
+        function handleKeyboardInput(e) {
+            // Prevent default behavior for calculator keys
+            if (e.key.match(/[0-9\.\+\-\*\/\%=EnterEscapeBackspace]/)) {
+                e.preventDefault();
+            }
+            
+            switch (e.key) {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    appendNumber(e.key);
+                    break;
+                case '.':
+                    appendNumber('.');
+                    break;
+                case '+':
+                    chooseOperation('add');
+                    break;
+                case '-':
+                    chooseOperation('subtract');
+                    break;
+                case '*':
+                    chooseOperation('multiply');
+                    break;
+                case '/':
+                    chooseOperation('divide');
+                    break;
+                case '%':
+                    chooseOperation('percent');
+                    break;
+                case '=':
+                case 'Enter':
+                    calculate();
+                    break;
+                case 'Escape':
+                    clearCalculator();
+                    break;
+                case 'Backspace':
+                    backspace();
+                    break;
+                case 'm':
+                case 'M':
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        memoryAdd();
+                    }
+                    break;
+            }
+        }
+
+        // Initialize calculator when page loads
+        document.addEventListener('DOMContentLoaded', initCalculator);
+    </script>
+</body>
+</html>
